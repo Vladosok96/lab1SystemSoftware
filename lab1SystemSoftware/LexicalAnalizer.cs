@@ -1,11 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace lab1SystemSoftware
 {
     class LexicalAnalizer
     {
+
+        private static List<Tuple<TokenType.Type, int>> tokens_thread;
+        private static Dictionary<int, string> identifiers_table;
+
+        LexicalAnalizer(List<Tuple<TokenType.Type, int>> _tokens_thread, Dictionary<int, string> _identifiers_table)
+        {
+            tokens_thread = _tokens_thread;
+            identifiers_table = _identifiers_table;
+        }
+
         enum State
         {
             Word,
@@ -23,10 +34,20 @@ namespace lab1SystemSoftware
             return false;
         }
 
-        public static Tuple<List<Tuple<TokenType.Type, int>>, Dictionary<int, string>> GetTokens(String code)
+        public List<Tuple<TokenType.Type, int>> GetTokensThread()
         {
-            List<Tuple<TokenType.Type, int>> tokens_thread = new List<Tuple<TokenType.Type, int>>();
-            Dictionary<string, int> identidiers_table = new Dictionary<string, int>();
+            return tokens_thread;
+        }
+
+        public Dictionary<int, string> GetIdentifiresTable()
+        {
+            return identifiers_table;
+        }
+
+        public static LexicalAnalizer GetTokens(String code)
+        {
+            tokens_thread = new List<Tuple<TokenType.Type, int>>();
+            Dictionary<string, int> reversed_identifiers_table = new Dictionary<string, int>();
 
             String buffer = "";
             State curent_state = State.None;
@@ -79,11 +100,11 @@ namespace lab1SystemSoftware
                                 break;
                             default:
                                 int tmp_identidier = 0;
-                                identidiers_table.TryGetValue(buffer, out tmp_identidier);
+                                reversed_identifiers_table.TryGetValue(buffer, out tmp_identidier);
 
                                 if (tmp_identidier == 0)
                                 {
-                                    identidiers_table.Add(buffer, identifier_increment);
+                                    reversed_identifiers_table.Add(buffer, identifier_increment);
                                     tmp_identidier = identifier_increment;
                                     identifier_increment++;
                                 }
@@ -222,8 +243,8 @@ namespace lab1SystemSoftware
                 }
             }
 
-            var reversed_identidiers_table = identidiers_table.ToDictionary(x => x.Value, x => x.Key);
-            return new Tuple<List<Tuple<TokenType.Type, int>>, Dictionary<int, string>>(tokens_thread, reversed_identidiers_table);
+            identifiers_table = reversed_identifiers_table.ToDictionary(x => x.Value, x => x.Key);
+            return new LexicalAnalizer(tokens_thread, identifiers_table);
         }
     }
 }
