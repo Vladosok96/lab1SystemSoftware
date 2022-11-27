@@ -1,6 +1,6 @@
 ﻿namespace lab1SystemSoftware
 {
-    class TokenType
+    public class TokenType
     {
         public enum Type
         {
@@ -40,6 +40,16 @@
             KeywordWhile = 45,
 
             Error = 50
+        }
+
+        public static bool isAssignType(Type type)
+        {
+            if (type == Type.OperatorAssign) return true;
+            if (type == Type.OperatorAdditionAssign) return true;
+            if (type == Type.OperatorSubtractionAssign) return true;
+            if (type == Type.OperatorMultiplicationAssign) return true;
+            if (type == Type.OperatorDivisionAssign) return true;
+            return false;
         }
 
         //public const int Identifier = 1;

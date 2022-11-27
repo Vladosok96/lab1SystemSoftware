@@ -60,31 +60,27 @@ namespace lab1SystemSoftware
                 }
             }
 
+            var syntax_analyzer = new SyntaxAnalizer();
+
             Console.ReadLine();
 
             //заполняем дерево тестовыми данными
-            TreeNode root = new TreeNode("Животные");
+            TreeNode root = new TreeNode(TokenType.Type.BracketOpen);
 
-            TreeNode node = new TreeNode("Млекопитающие");
-            TreeNode node2 = new TreeNode("Хищные");
-            node2.Children.Add(new TreeNode("Волк"));
-            node2.Children.Add(new TreeNode("Лиса"));
+            TreeNode node = new TreeNode(TokenType.Type.ComparisonEqual);
+            
+            TreeNode node2 = new TreeNode(TokenType.Type.OperatorSubtraction);
+            
+            TreeNode node3 = new TreeNode(TokenType.Type.OperatorAddition);
+            node3.Children.Add(new TreeNode(TokenType.Type.Number, 10));
+            node3.Children.Add(new TreeNode(TokenType.Type.Number, 5));
+
+            node2.Children.Add(node3);
+            node2.Children.Add(new TreeNode(TokenType.Type.Number, 35));
+
+            node.Children.Add(new TreeNode(TokenType.Type.Identifier, 1));
             node.Children.Add(node2);
-            node2 = new TreeNode("Зайцеобразные");
-            node2.Children.Add(new TreeNode("Заяц"));
-            node2.Children.Add(new TreeNode("Кролик"));
-            node.Children.Add(node2);
-            root.Children.Add(node);
-
-            node = new TreeNode("Птицы");
-            node.Children.Add(new TreeNode("Пингвин"));
-            node.Children.Add(new TreeNode("Попугай"));
-            node.Children.Add(new TreeNode("Ворона"));
-            root.Children.Add(node);
-
-            node = new TreeNode("Пресмыкающиеся");
-            node.Children.Add(new TreeNode("Черепаха"));
-            node.Children.Add(new TreeNode("Крокодил"));
+            
             root.Children.Add(node);
 
             //вычисляем координаты
