@@ -52,6 +52,16 @@
             return false;
         }
 
+        public static bool isAryphmeticType(Type type)
+        {
+            if (type == Type.OperatorAssign) return true;
+            if (type == Type.OperatorAdditionAssign) return true;
+            if (type == Type.OperatorSubtractionAssign) return true;
+            if (type == Type.OperatorMultiplicationAssign) return true;
+            if (type == Type.OperatorDivisionAssign) return true;
+            return false;
+        }
+
         //public const int Identifier = 1;
         //public const int Number = 2;
         //public const int Semicolon = 3;

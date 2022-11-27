@@ -117,28 +117,30 @@ namespace lab1SystemSoftware
             
             TreeNode _root = new TreeNode(GrammaticalComponent.Component.empty_set);
 
-            GrammaticalComponent.State current_state = GrammaticalComponent.State.None;
+            GrammaticalComponent.State current_state = GrammaticalComponent.State.none;
             List<TreeNode> nodes_buffer = new List<TreeNode>();
 
             for (int i = 0; i < tokens_thread.Count; i++)
             {
                 switch (current_state)
                 {
-                    case GrammaticalComponent.State.None:
+                    case GrammaticalComponent.State.none:
                         if (tokens_thread[i].Item1 == TokenType.Type.Identifier)
                         {
                             if (TokenType.isAssignType(tokens_thread[i + 1].Item1))
                             {
                                 nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.stmts, TokenType.Type.OperatorAssign));
                                 nodes_buffer[nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.identifier, TokenType.Type.Identifier, VariableType.Type._int, 0));
-
+                                current_state = GrammaticalComponent.State.expression;
                             }
                             else
                             {
                                 // TODO: Assign error handler
                             }
                         }
-                        //nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.stmts));
+                        break;
+                    case GrammaticalComponent.State.expression:
+                        
                         break;
                 }
             }
