@@ -22,7 +22,8 @@ namespace lab1SystemSoftware
         {
             none = 0,
             stmts = 1,
-            expression = 2
+            expression = 2,
+            wait = 3
         }
     }
 }

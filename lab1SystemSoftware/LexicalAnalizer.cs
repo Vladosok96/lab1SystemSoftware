@@ -144,39 +144,49 @@ namespace lab1SystemSoftware
                             break;
                         case "++":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.OperatorIncrement, 0));
+                            i++;
                             break;
                         case "--":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.OperatorDecrement, 0));
+                            i++;
                             break;
                         case "+=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.OperatorAdditionAssign, 0));
+                            i++;
                             break;
                         case "-=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.OperatorSubtractionAssign, 0));
+                            i++;
                             break;
                         case "*=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.OperatorMultiplicationAssign, 0));
+                            i++;
                             break;
                         case "/=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.OperatorDivisionAssign, 0));
+                            i++;
                             break;
                         case "==":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.ComparisonEqual, 0));
+                            i++;
                             break;
                         case "!=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.ComparisonNotEqual, 0));
+                            i++;
                             break;
                         case "<":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.ComparisonLess, 0));
                             break;
                         case "<=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.ComparisonLessEqual, 0));
+                            i++;
                             break;
                         case ">":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.ComparisonGreater, 0));
                             break;
                         case ">=":
                             tokens_thread.Add(new Tuple<TokenType.Type, int>(TokenType.Type.ComparisonGreaterEqual, 0));
+                            i++;
                             break;
                     }
                     buffer = "";

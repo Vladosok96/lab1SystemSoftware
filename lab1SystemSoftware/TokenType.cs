@@ -54,11 +54,10 @@
 
         public static bool isAryphmeticType(Type type)
         {
-            if (type == Type.OperatorAssign) return true;
-            if (type == Type.OperatorAdditionAssign) return true;
-            if (type == Type.OperatorSubtractionAssign) return true;
-            if (type == Type.OperatorMultiplicationAssign) return true;
-            if (type == Type.OperatorDivisionAssign) return true;
+            if (type == Type.OperatorAddition) return true;
+            if (type == Type.OperatorSubtraction) return true;
+            if (type == Type.OperatorMultiplication) return true;
+            if (type == Type.OperatorDivision) return true;
             return false;
         }
 

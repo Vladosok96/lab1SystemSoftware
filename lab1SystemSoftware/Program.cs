@@ -60,34 +60,10 @@ namespace lab1SystemSoftware
                 }
             }
 
-            var syntax_analyzer = new SyntaxAnalizer();
-
             Console.ReadLine();
-
-            //заполняем дерево тестовыми данными
-            TreeNode root = new TreeNode(TokenType.Type.BracketOpen);
-
-            TreeNode node = new TreeNode(TokenType.Type.ComparisonEqual);
             
-            TreeNode node2 = new TreeNode(TokenType.Type.OperatorSubtraction);
-            
-            TreeNode node3 = new TreeNode(TokenType.Type.OperatorAddition);
-            node3.Children.Add(new TreeNode(TokenType.Type.Number, 10));
-            node3.Children.Add(new TreeNode(TokenType.Type.Number, 5));
-
-            node2.Children.Add(node3);
-            node2.Children.Add(new TreeNode(TokenType.Type.Number, 35));
-
-            node.Children.Add(new TreeNode(TokenType.Type.Identifier, 1));
-            node.Children.Add(node2);
-            
-            root.Children.Add(node);
-
-            //вычисляем координаты
-            TreeNode.TreeCalcCoordinates(root);
-
-            //выводим дерево в консоль
-            TreeNode.TreePrint(root);
+            var syntax_analyzer = SyntaxAnalizer.Process(lexical_analize);
+            syntax_analyzer.PrintTree(identifiers_table);
 
             Console.ReadKey();
 
