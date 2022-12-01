@@ -36,8 +36,8 @@
             KeywordLet = 41,
             KeywordVar = 42,
             KeywordIf = 43,
-            KeywordFor = 43,
-            KeywordWhile = 45,
+            KeywordFor = 45,
+            KeywordWhile = 46,
 
             Error = 50,
             None = 51

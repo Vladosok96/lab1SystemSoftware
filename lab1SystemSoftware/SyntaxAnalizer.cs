@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
@@ -139,7 +141,60 @@ namespace lab1SystemSoftware
             root = _root;
         }
 
+        private static TreeNode parseExpression (List<Tuple<TokenType.Type, int>> expression_thread)
+        {
+            List<TreeNode> nodes_buffer = new List<TreeNode>();
+            List<TreeNode> last_nodes_buffer = new List<TreeNode>();
 
+            for (int i = 0; i < expression_thread.Count; i++)
+            {
+                nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, expression_thread[i].Item1, VariableType.Type._int, expression_thread[i].Item2));
+            }
+
+            while (!nodes_buffer.SequenceEqual(last_nodes_buffer))
+            {
+                last_nodes_buffer = new List<TreeNode>(nodes_buffer);
+                for (int i = 1; i < nodes_buffer.Count; i += 2) // low priority (not dota)
+                {
+                    if (nodes_buffer[i].sub_type == TokenType.Type.OperatorMultiplication || nodes_buffer[i].sub_type == TokenType.Type.OperatorDivision)
+                    {
+                        nodes_buffer[i].Children.Add(nodes_buffer[i + 1]);
+                        nodes_buffer[i].Children.Add(nodes_buffer[i - 1]);
+                        nodes_buffer.RemoveAt(i + 1);
+                        nodes_buffer.RemoveAt(i - 1);
+                        i--;
+                    }
+                }
+            }
+
+            last_nodes_buffer = new List<TreeNode>(nodes_buffer);
+            for (int i = 1; i < nodes_buffer.Count; i++) // meddium priority (not dota)
+            {
+                if (nodes_buffer[i].sub_type == TokenType.Type.OperatorAddition || nodes_buffer[i].sub_type == TokenType.Type.OperatorSubtraction)
+                {
+                    nodes_buffer[i].Children.Add(nodes_buffer[i + 1]);
+                    nodes_buffer[i].Children.Add(nodes_buffer[i - 1]);
+                    nodes_buffer.RemoveAt(i + 1);
+                    nodes_buffer.RemoveAt(i - 1);
+                    i--;
+                }
+            }
+
+            last_nodes_buffer = new List<TreeNode>(nodes_buffer);
+            for (int i = 1; i < nodes_buffer.Count; i++) // meddium priority (not dota)
+            {
+                if (TokenType.isComparisionType(nodes_buffer[i].sub_type))
+                {
+                    nodes_buffer[i].Children.Add(nodes_buffer[i + 1]);
+                    nodes_buffer[i].Children.Add(nodes_buffer[i - 1]);
+                    nodes_buffer.RemoveAt(i + 1);
+                    nodes_buffer.RemoveAt(i - 1);
+                    i--;
+                }
+            }
+
+            return nodes_buffer[0];
+        }
 
         public static SyntaxAnalizer Process(LexicalAnalizer lexical_analizer)
         {
@@ -161,112 +216,28 @@ namespace lab1SystemSoftware
                         // TODO: stmtif handler
                         nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.stmts, tokens_thread[i].Item1));
                         nodes_buffer[nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.condition));
-                            
-                        List<TreeNode> expr_nodes_buffer = new List<TreeNode>();
-                        expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[i + 2].Item1, VariableType.Type._int, tokens_thread[i + 2].Item2));
 
-                        TreeNode tmpTreeNode;
-                        TokenType.Type lastOperator = TokenType.Type.None;
-
-                        for (int j = i + 3; tokens_thread[j].Item1 != TokenType.Type.BracketClose;)
+                        int counter = 0;
+                        while (tokens_thread[i + 2 + counter].Item1 != TokenType.Type.BracketClose)
                         {
-                            if (tokens_thread[j].Item1 == TokenType.Type.OperatorMultiplication || tokens_thread[j].Item1 == TokenType.Type.OperatorDivision)
-                            {
-                                expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j].Item1));
-                                expr_nodes_buffer[expr_nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j + 1].Item1, VariableType.Type._int, tokens_thread[j + 1].Item2));
-                                expr_nodes_buffer[expr_nodes_buffer.Count - 1].Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                                expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 2);
-                                j += 2;
-                            }
-                            else if (tokens_thread[j].Item1 == TokenType.Type.OperatorAddition || tokens_thread[j].Item1 == TokenType.Type.OperatorSubtraction)
-                            {
-                                if (expr_nodes_buffer.Count > 1)
-                                {
-                                    tmpTreeNode = new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j].Item1);
-                                    tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 1]);
-                                    tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                                    expr_nodes_buffer[expr_nodes_buffer.Count - 2] = tmpTreeNode;
-                                    expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 1);
-                                }
-                                lastOperator = tokens_thread[j].Item1;
-                                expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j + 1].Item1, VariableType.Type._int, tokens_thread[j + 1].Item2));
-                                j += 2;
-                            }
-                            else if (TokenType.isComparisionType(tokens_thread[j].Item1))
-                            {
-                                if (expr_nodes_buffer.Count > 1)
-                                {
-                                    tmpTreeNode = new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j].Item1);
-                                    tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 1]);
-                                    tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                                    expr_nodes_buffer[expr_nodes_buffer.Count - 2] = tmpTreeNode;
-                                    expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 1);
-                                }
-                                lastOperator = tokens_thread[j].Item1;
-                                expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j + 1].Item1, VariableType.Type._int, tokens_thread[j + 1].Item2));
-                                j += 2;
-                            }
+                            counter++;
                         }
 
-                        if (expr_nodes_buffer.Count > 1)
-                        {
-                            tmpTreeNode = new TreeNode(GrammaticalComponent.Component.value, lastOperator);
-                            tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 1]);
-                            tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                            expr_nodes_buffer[expr_nodes_buffer.Count - 2] = tmpTreeNode;
-                            expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 1);
-                        }
-
-                        nodes_buffer[nodes_buffer.Count - 1].Children[0].Children.Add(expr_nodes_buffer[0]);
+                        nodes_buffer[nodes_buffer.Count - 1].Children[0].Children.Add(parseExpression(tokens_thread.GetRange(i + 2, counter)));
                         state = GrammaticalComponent.State.wait_condition;
                     }
                     else if (tokens_thread[i].Item1 == TokenType.Type.Identifier)
                     {
                         nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.stmts, tokens_thread[i + 1].Item1));
                         nodes_buffer[nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.identifier, TokenType.Type.Identifier, VariableType.Type._int, tokens_thread[i].Item2));
-                        
-                        TreeNode tmpTreeNode;
-                        TokenType.Type lastOperator = TokenType.Type.None;
 
-                        List<TreeNode> expr_nodes_buffer = new List<TreeNode>();
-                        expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[i + 2].Item1, VariableType.Type._int, tokens_thread[i + 2].Item2));
-
-                        for (int j = i + 3; tokens_thread[j].Item1 != TokenType.Type.Semicolon;)
+                        int counter = 0;
+                        while (tokens_thread[i + 2 + counter].Item1 != TokenType.Type.Semicolon)
                         {
-                            if (tokens_thread[j].Item1 == TokenType.Type.OperatorMultiplication || tokens_thread[j].Item1 == TokenType.Type.OperatorDivision)
-                            {
-                                expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j].Item1));
-                                expr_nodes_buffer[expr_nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j + 1].Item1, VariableType.Type._int, tokens_thread[j + 1].Item2));
-                                expr_nodes_buffer[expr_nodes_buffer.Count - 1].Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                                expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 2);
-                                j += 2;
-                            }
-                            else if (tokens_thread[j].Item1 == TokenType.Type.OperatorAddition || tokens_thread[j].Item1 == TokenType.Type.OperatorSubtraction)
-                            {
-                                if (expr_nodes_buffer.Count > 1)
-                                {
-                                    tmpTreeNode = new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j].Item1);
-                                    tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 1]);
-                                    tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                                    expr_nodes_buffer[expr_nodes_buffer.Count - 2] = tmpTreeNode;
-                                    expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 1);
-                                }
-                                lastOperator = tokens_thread[j].Item1;
-                                expr_nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.value, tokens_thread[j + 1].Item1, VariableType.Type._int, tokens_thread[j + 1].Item2));
-                                j += 2;
-                            }
-                        }
-                        
-                        if (expr_nodes_buffer.Count > 1)
-                        {
-                            tmpTreeNode = new TreeNode(GrammaticalComponent.Component.value, lastOperator);
-                            tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 1]);
-                            tmpTreeNode.Children.Add(expr_nodes_buffer[expr_nodes_buffer.Count - 2]);
-                            expr_nodes_buffer[expr_nodes_buffer.Count - 2] = tmpTreeNode;
-                            expr_nodes_buffer.RemoveAt(expr_nodes_buffer.Count - 1);
+                            counter++;
                         }
 
-                        nodes_buffer[nodes_buffer.Count - 1].Children.Add(expr_nodes_buffer[0]);
+                        nodes_buffer[nodes_buffer.Count - 1].Children.Add(parseExpression(tokens_thread.GetRange(i + 2, counter)));
                         state = GrammaticalComponent.State.wait_expression;
                     }
                     else
