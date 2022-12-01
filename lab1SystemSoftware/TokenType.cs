@@ -39,7 +39,8 @@
             KeywordFor = 43,
             KeywordWhile = 45,
 
-            Error = 50
+            Error = 50,
+            None = 51
         }
 
         public static bool isAssignType(Type type)
@@ -58,6 +59,18 @@
             if (type == Type.OperatorSubtraction) return true;
             if (type == Type.OperatorMultiplication) return true;
             if (type == Type.OperatorDivision) return true;
+            return false;
+        }
+
+        public static bool isComparisionType(Type type)
+        {
+            if (type == Type.ComparisonEqual) return true;
+            if (type == Type.ComparisonNotEqual) return true;
+            if (type == Type.ComparisonGreater) return true;
+            if (type == Type.ComparisonGreaterEqual) return true;
+            if (type == Type.ComparisonLess) return true;
+            if (type == Type.ComparisonLessEqual) return true;
+            
             return false;
         }
 
