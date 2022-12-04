@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace lab1SystemSoftware
@@ -201,9 +202,9 @@ namespace lab1SystemSoftware
             List<Tuple<TokenType.Type, int>> tokens_thread = lexical_analizer.GetTokensThread();
             Dictionary<int, string> identifiers_table = lexical_analizer.GetIdentifiresTable();
             
-            TreeNode _root = new TreeNode(GrammaticalComponent.Component.empty_set);
 
             List<TreeNode> nodes_buffer = new List<TreeNode>();
+            nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.empty_set));
 
             GrammaticalComponent.State state = GrammaticalComponent.State.none;
             
@@ -228,8 +229,9 @@ namespace lab1SystemSoftware
                     }
                     else if (tokens_thread[i].Item1 == TokenType.Type.Identifier)
                     {
-                        nodes_buffer.Add(new TreeNode(GrammaticalComponent.Component.stmts, tokens_thread[i + 1].Item1));
-                        nodes_buffer[nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.identifier, TokenType.Type.Identifier, VariableType.Type._int, tokens_thread[i].Item2));
+                        TreeNode tmpNode = new TreeNode(GrammaticalComponent.Component.stmts, tokens_thread[i + 1].Item1);
+                        tmpNode.Children.Add(new TreeNode(GrammaticalComponent.Component.identifier, TokenType.Type.Identifier, VariableType.Type._int, tokens_thread[i].Item2));
+                        
 
                         int counter = 0;
                         while (tokens_thread[i + 2 + counter].Item1 != TokenType.Type.Semicolon)
@@ -237,8 +239,32 @@ namespace lab1SystemSoftware
                             counter++;
                         }
 
-                        nodes_buffer[nodes_buffer.Count - 1].Children.Add(parseExpression(tokens_thread.GetRange(i + 2, counter)));
+
+                        TreeNode tmpExpression = parseExpression(tokens_thread.GetRange(i + 2, counter));
+                        tmpNode.Children.Add(parseExpression(tokens_thread.GetRange(i + 2, counter)));
+                        
+                        if (nodes_buffer[nodes_buffer.Count - 1].sub_type == TokenType.Type.KeywordIf)
+                        {
+                            nodes_buffer[nodes_buffer.Count - 1].Children[nodes_buffer[nodes_buffer.Count - 1].Children.Count - 1].Children.Add(tmpNode);
+                        }
+                        else
+                        {
+                            nodes_buffer[nodes_buffer.Count - 1].Children.Add(tmpNode);
+                        }
+
                         state = GrammaticalComponent.State.wait_expression;
+                    }
+                    else if (tokens_thread[i].Item1 == TokenType.Type.BraceClose)
+                    {
+                        if (nodes_buffer[nodes_buffer.Count - 2].sub_type == TokenType.Type.KeywordIf)
+                        {
+                            nodes_buffer[nodes_buffer.Count - 2].Children[nodes_buffer[nodes_buffer.Count - 1].Children.Count - 1].Children.Add(nodes_buffer[nodes_buffer.Count - 1]);
+                        }
+                        else
+                        {
+                            nodes_buffer[nodes_buffer.Count - 2].Children.Add(nodes_buffer[nodes_buffer.Count - 1]);
+                        }
+                        nodes_buffer.RemoveAt(nodes_buffer.Count - 1);
                     }
                     else
                     {
@@ -249,8 +275,6 @@ namespace lab1SystemSoftware
                 {
                     if (tokens_thread[i].Item1 == TokenType.Type.Semicolon)
                     {
-                        _root.Children.Add(nodes_buffer[nodes_buffer.Count - 1]);
-                        nodes_buffer.RemoveAt(nodes_buffer.Count - 1);
                         state = GrammaticalComponent.State.none;
                     }
                 }
@@ -258,14 +282,13 @@ namespace lab1SystemSoftware
                 {
                     if (tokens_thread[i].Item1 == TokenType.Type.BracketClose)
                     {
-                        _root.Children.Add(nodes_buffer[nodes_buffer.Count - 1]);
-                        nodes_buffer.RemoveAt(nodes_buffer.Count - 1);
+                        nodes_buffer[nodes_buffer.Count - 1].Children.Add(new TreeNode(GrammaticalComponent.Component.body));
                         state = GrammaticalComponent.State.none;
                     }
                 }
             }
 
-            return new SyntaxAnalizer(_root);
+            return new SyntaxAnalizer(nodes_buffer[0]);
         }
 
         public void PrintTree(Dictionary<int, string> identifiers_table)

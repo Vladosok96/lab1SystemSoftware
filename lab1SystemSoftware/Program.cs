@@ -39,16 +39,18 @@ namespace lab1SystemSoftware
             {
                 Console.WriteLine("{0}: {1};", identifier.Key, identifier.Value);
             }
+
+            int counter = 0;
             Console.WriteLine("\nTokens thread:");
             foreach (var token in tokens_table)
             {
                 if (token.Item1 == TokenType.Type.Identifier)
                 {
-                    Console.WriteLine("Type: identifier, id: {0}, name: {1};", token.Item2, identifiers_table[token.Item2]);
+                    Console.WriteLine("{0}. Type: identifier, id: {1}, name: {2};", counter, token.Item2, identifiers_table[token.Item2]);
                 }
                 else if (token.Item1 == TokenType.Type.Number)
                 {
-                    Console.WriteLine("Type: number, value: {0};", token.Item2);
+                    Console.WriteLine("{0}. Type: number, value: {1};", counter, token.Item2);
                 }
                 else if (token.Item1 == TokenType.Type.Error)
                 {
@@ -56,8 +58,9 @@ namespace lab1SystemSoftware
                 }
                 else
                 {
-                    Console.WriteLine("Type: {0};", token.Item1.ToString());
+                    Console.WriteLine("{0}. Type: {1};", counter, token.Item1.ToString());
                 }
+                counter++;
             }
 
             Console.ReadLine();

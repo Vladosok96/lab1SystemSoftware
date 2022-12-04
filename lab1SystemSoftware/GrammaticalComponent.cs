@@ -15,7 +15,8 @@ namespace lab1SystemSoftware
             identifier = 3,
             value = 4,
             condition = 5,
-            alternate = 6
+            alternate = 6,
+            body = 7,
         }
 
         public enum State
@@ -24,7 +25,9 @@ namespace lab1SystemSoftware
             stmts = 1,
             expression = 2,
             wait_expression = 3,
-            wait_condition = 4
+            wait_condition = 4,
+            if_body = 5,
+            else_body = 6
         }
     }
 }
