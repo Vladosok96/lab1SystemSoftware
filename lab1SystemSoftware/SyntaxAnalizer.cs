@@ -15,10 +15,17 @@ namespace lab1SystemSoftware
         public GrammaticalComponent.Component type; // имя узла
         public TokenType.Type sub_type;
         public VariableType.Type variable_type;
+        public bool is_accepted = false;
+        public bool is_initial = false;
         public int value = -69696969; // Значение
         public int X { get; set; } //горизонтальная координата для отображения (заполняется TreeCalcCoordinates)
         public int Y { get; set; } //вертикальная координата для отображения (заполняется TreeCalcCoordinates) 
         
+        public virtual string ToString()
+        {
+            return type.ToString() + " " + sub_type.ToString();
+        }
+
         public TreeNode(GrammaticalComponent.Component _Type)
         {
             type = _Type;
@@ -142,6 +149,11 @@ namespace lab1SystemSoftware
             root = _root;
         }
 
+        public TreeNode GetTree()
+        {
+            return root;
+        }
+
         private static TreeNode parseExpression (List<Tuple<TokenType.Type, int>> expression_thread)
         {
             List<TreeNode> nodes_buffer = new List<TreeNode>();
@@ -230,6 +242,10 @@ namespace lab1SystemSoftware
                     else if (tokens_thread[i].Item1 == TokenType.Type.Identifier)
                     {
                         TreeNode tmpNode = new TreeNode(GrammaticalComponent.Component.stmts, tokens_thread[i + 1].Item1);
+                        if (tokens_thread[i - 1].Item1 == TokenType.Type.KeywordLet)
+                        {
+                            tmpNode.is_initial = true;
+                        }
                         tmpNode.Children.Add(new TreeNode(GrammaticalComponent.Component.identifier, TokenType.Type.Identifier, VariableType.Type._int, tokens_thread[i].Item2));
                         
 

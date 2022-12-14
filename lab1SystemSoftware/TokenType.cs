@@ -74,5 +74,13 @@
             return false;
         }
 
+        public static bool isOperandType(Type type)
+        {
+            if (type == Type.Identifier) return true;
+            if (type == Type.Number) return true;
+
+            return false;
+        }
+
     }
 }

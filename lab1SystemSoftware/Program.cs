@@ -8,7 +8,7 @@ namespace lab1SystemSoftware
     {
         static void Main(string[] args)
         {
-            String PATH_TO_PROGRAM = "script.js";
+            String PATH_TO_PROGRAM = "../../script.js";
 
             String JS_code_string = "";
             String input_string;
@@ -66,7 +66,9 @@ namespace lab1SystemSoftware
             Console.ReadLine();
             
             var syntax_analyzer = SyntaxAnalizer.Process(lexical_analize);
-            syntax_analyzer.PrintTree(identifiers_table);
+            //syntax_analyzer.PrintTree(identifiers_table);
+
+            TreeConverter.Process(syntax_analyzer, lexical_analize);
 
             Console.ReadKey();
 
